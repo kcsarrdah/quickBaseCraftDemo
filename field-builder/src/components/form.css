@@ -1,0 +1,107 @@
+/* Styling for the form container */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f0; /* Background color for the whole page */
+}
+
+/* Styling for the form */
+form {
+  width: 80%; /* Set the form width to 80% of the viewport width */
+  max-width: 800px; /* Limit the maximum width of the form */
+  padding: 60px;
+  margin: 40px auto; /* Center the form horizontally */
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+  text-align: left; /* Align text to the left */
+}
+
+/* Style for each form group (label + input) */
+div {
+  display: flex;
+  flex-direction: row; /* Display label and input in a row */
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+/* Style for labels */
+label {
+  font-weight: bold;
+  width: 60%; /* Fixed width for labels */
+  margin-right: 60px; /* Add spacing to the right of labels */
+}
+
+/* Style for inputs */
+input[type="text"],
+select,
+input[type="checkbox"] {
+  width: 100%; /* Full width for inputs on smaller screens */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 16px;
+}
+
+/* Style for the required text next to the checkbox */
+.required-text {
+  font-size: 14px;
+  color: gray; /* Red color for required text */
+  margin-left: 5px; /* Add spacing to the left of the text */
+}
+
+/* Style for buttons */
+.buttons-container {
+  display: flex;
+  justify-content: space-between; /* Add space between buttons */
+  margin-top: 20px; /* Add margin to the bottom of the form */
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #f70f0f;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button[type="submit"] {
+  background-color: #0056b3;
+}
+
+button[type="submit"]:hover{
+  background-color: #28a745
+}
+
+button[type="button"]:hover {
+  background-color: #bf0b0b;
+}
+
+/* Media query for smaller screens (e.g., mobile) */
+@media (max-width: 600px) {
+  form {
+    padding: 20px; /* Increase padding for smaller screens */
+  }
+
+  /* Remove margin between form groups for smaller screens */
+  div {
+    margin-bottom: 20px;
+  }
+
+  /* Display buttons in a row for smaller screens */
+  .buttons-container {
+    flex-direction: row;
+  }
+
+  /* Add spacing between buttons on smaller screens */
+  button {
+    margin-right: 10px;
+  }
+}
