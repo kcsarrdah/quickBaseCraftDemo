@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 
-function SubmitButton({ onClick, loading, children }) {
+function SubmitButton({ id, onClick, loading, children }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = async (e) => {
     if (onClick) {
       setIsLoading(true);
-      await onClick(e); // Execute the provided onClick function
 
-      // After the action is complete, set loading to false
-      setIsLoading(false);
+      // Simulate loading for 2 seconds (you can adjust the duration as needed)
+      setTimeout(async () => {
+        await onClick(e); // Execute the provided onClick function
+
+        // After the action is complete, set loading to false
+        setIsLoading(false);
+      }, 2000); // 2 seconds (2000 milliseconds)
     }
   };
 
   return (
-    <button type="button" onClick={handleClick} disabled={isLoading} className='btn-submit'>
+    <button type="button" id={id} onClick={handleClick} disabled={isLoading} className='btn-submit'>
       {isLoading ? 'Loading...' : children}
     </button>
   );

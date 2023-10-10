@@ -1,17 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './form.css'; // Import the CSS file
 import Field from './Field/Field';
 import Checkbox from './CheckBox/CheckBox';
 import TextArea from './TextArea/TextArea';
 import Select from './SelectComponent/SelectComponent';
+import SubmitButton from './SubmitButton/SubmitButton';
 
 function FieldBuilderForm() {
+
   const orderOptions = [
     { label: 'Display Choices in Alphabetical Order', value: 'Choice1' },
     { label: 'Display Choices in the order they were entered', value: 'Choice2' },
   ];
 
   const [validationErrors, setValidationErrors] = useState([]);
+  const [fieldValue, setFieldValue] = useState('');
+  const [isMultiSelect, setIsMultiSelect] = useState(false);
+  const [defaultValue, setDefaultValue] = useState('');
+  const [choices, setChoices] = useState('');
+  const [order, setOrder] = useState('Choice1');
+
+  // Function to handle input changes
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setFieldValue(value);
+    localStorage.setItem(fieldValue, value); // Save the value to localStorage
+  };
+
+  const handleMultiSelectChange = (event) => {
+    const value = event.target.value;
+    setIsMultiSelect(event.target.checked);
+    localStorage.setItem('isMultiSelect', event.target.checked);
+  };
+
+  const handleDefaultValueChange = (event) => {
+    setDefaultValue(event.target.value);
+  };
+
+  const handleChoicesChange = (event) => {
+    const newChoices = event.target.value;
+    setChoices(newChoices);
+  };
+
+  const handleOrderChange = (event) => {
+    setOrder(event.target.value);
+  };
+
+  const handleClearForm = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
+
+
+  useEffect(() => {
+    const savedValue = localStorage.getItem(fieldValue);
+    if (savedValue !== null) {
+      setFieldValue(savedValue);
+    }
+  }, [fieldValue]);
   
 
   const validateForm = () => {
@@ -64,40 +110,6 @@ function FieldBuilderForm() {
       choicesTextArea.value = choices.join('\n');
     }
 
-    const formData = {
-        label: document.getElementById('fieldName').value,
-        isMultiSelect: document.getElementById('isMultiSelect').checked,
-        defaultValue: document.getElementById('defaultValue').value,
-        choices: document.getElementById('choices').value
-          .split('\n')
-          .map((choice) => choice.trim())
-          .filter((choice) => choice !== ''),
-        order: document.getElementById('order').value,
-      };
-
-      // Log the JSON data to the console
-      console.log(formData);
-
-      // Post the JSON data to the specified endpoint
-      try {
-        const response = await fetch('http://www.mocky.io/v2/566061f21200008e3aabd919', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        });
-
-        if (response.ok) {
-          // Handle a successful response if needed
-          console.log('Data posted successfully!');
-        } else {
-          // Handle an error response if needed
-          console.error('Error posting data:', response.status);
-        }
-      } catch (error) {
-        console.error('An error occurred while posting data:', error);
-      }
   };
 
   return (
@@ -111,9 +123,16 @@ function FieldBuilderForm() {
           type="text"
           placeholder="Sales Region"
           required
+          value={fieldValue} // Set the input value from state
+        onChange={handleInputChange} // Handle input changes
         />
 
-        <Checkbox label="Multi-select" id="isMultiSelect" name="isMultiSelect" />
+        <Checkbox 
+        label="Multi-select" 
+        id="isMultiSelect" 
+        name="isMultiSelect"  
+        checked={isMultiSelect}
+        onChange={handleMultiSelectChange}/>
 
         <Field
           label="Default Value"
@@ -121,25 +140,26 @@ function FieldBuilderForm() {
           name="defaultValue"
           type="text"
           placeholder="Enter default value"
+          value={defaultValue}
+          onChange={handleDefaultValueChange}
         />
 
-        <TextArea label="Choices" id="choices" name="choices" required rows={4} cols={50} />
+        <TextArea label="Choices" id="choices" name="choices" required rows={4} cols={50} value={defaultValue}
+          onChange={handleChoicesChange}/>
+
 
         <Select label="Order" id="order" name="order" options={orderOptions} />
 
         <div className="buttons-container">
           
-          <button type="submit">Save Changes</button>
+        <SubmitButton id="SaveChanges" onClick={handleSubmit} loading={false}>
+          Save Changes
+        </SubmitButton>
 
-          <button
-            type="button"
-            onClick={() => {
-              localStorage.clear();
-              window.location.reload();
-            }}
-          >
-            Clear Form
-          </button>
+        <SubmitButton onClick={handleClearForm} loading={false}>
+          Clear Form
+        </SubmitButton>
+
 
         </div>
       </form>

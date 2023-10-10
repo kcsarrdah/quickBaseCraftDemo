@@ -15,7 +15,7 @@ body {
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   width: 90%; /* Adjust to fit smaller screens */
   max-width: 800px; /* Max width for larger screens */
-  margin: 40px auto;
+  margin: 20px auto;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -47,8 +47,8 @@ div {
   display: flex;
   flex-direction: row; /* Display label and input in a row */
   align-items: center;
-  margin-bottom: 40px;
-  padding: 20px;
+  margin-bottom: 20px;
+  padding: 10px;
 }
 
 /* Style for labels */
@@ -98,10 +98,20 @@ button {
 button[type="submit"] {
   background-color: #0056b3;
 }
-
-button[type="submit"]:hover{
-  background-color: #28a745
+#SaveChanges {
+  background-color: #0056b3; /* Blue background color */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease; /* Add a smooth transition effect */
 }
+
+#SaveChanges:hover {
+  background-color: #28a745; /* Green background color on hover */
+}
+
 
 button[type="button"]:hover {
   background-color: #bf0b0b;
@@ -111,9 +121,18 @@ button[type="button"]:hover {
   color: red;
 }
 
-
 .choice-error {
   color: red; /* Highlight characters in red */
+}
+
+div input[type="checkbox"] {
+  /* Add a border and change background color on hover */
+  cursor: pointer;
+}
+
+div input[type="checkbox"]:hover {
+  border: 2px solid #007bff; /* Change border color on hover */
+  background-color: #f0f0f0; /* Change background color on hover */
 }
 
 /* Media query for smaller screens (e.g., mobile) */
@@ -167,4 +186,5 @@ button[type="button"]:hover {
     font-size: 14px;
   }
 }
+
 
