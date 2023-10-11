@@ -19,17 +19,20 @@ function Field({ label, id, name, type, placeholder, required }) {
   }, [id]);
 
   return (
-    <div>
-      <label htmlFor={id}>{label}</label>
-      <input
-        type={type}
-        id={id}
-        name={name}
-        placeholder={placeholder}
-        required={required}
-        value={fieldValue} // Set the input value from state
-        onChange={handleInputChange} // Handle input changes
-      />
+    <div className="row form-group align-items-center">
+        <label htmlFor={id} className="col-md-2">{label}</label>
+        <div className="col-md-10">
+            <input
+                type={type}
+                className="form-control"
+                id={id}
+                name={name}
+                placeholder={placeholder}
+                required={required}
+                value={fieldValue}
+                onChange={handleInputChange}
+            />
+        </div>
     </div>
   );
 }

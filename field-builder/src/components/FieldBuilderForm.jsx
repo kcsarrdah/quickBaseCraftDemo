@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './form.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import Field from './Field/Field';
 import Checkbox from './CheckBox/CheckBox';
 import TextArea from './TextArea/TextArea';
@@ -122,79 +123,90 @@ function FieldBuilderForm() {
  
     };
 
-    return (
-        <div className="form-container">
-            <div className="form-title">Field Builder</div>
-            <form onSubmit={handleSubmit}>
-                <Field
-                    label="Label"
-                    id="fieldName"
-                    name="fieldName"
-                    type="text"
-                    placeholder="Sales Region"
-                    required
-                    value={fieldValue}
-                    onChange={handleInputChange}
-                />
+   
+return (
+  <div className="container mt-5">
+    <div className="row justify-content-center">
+    <div className="col-md-6">
+      <div className="card border-info border-opacity-10 ">
+          <div className="card-header bg-info bg-opacity-10 text-black text-left mb-4">Field Builder</div>
+          <form onSubmit={handleSubmit} className="p-4 mb-4">
+              <div className="mb-5 mt-5 ms-3 me-3">
+                  <Field
+                      label="Label"
+                      id="fieldName"
+                      name="fieldName"
+                      type="text"
+                      placeholder="Sales Region"
+                      required
+                      value={fieldValue}
+                      onChange={handleInputChange}
+                  />
+              </div>
 
-                <div>
-                  <label htmlFor="Type">Type</label>
-                <Checkbox
-                    label="Multi-select"
-                    id="isMultiSelect"
-                    name="isMultiSelect"
-                    checked={isMultiSelect}
-                    onChange={handleMultiSelectChange}
-                />
-                </div>
+              <div className="mb-5 mt-5 ms-3 me-3">
+                  <Checkbox
+                      label="Multi-select"
+                      id="isMultiSelect"
+                      name="isMultiSelect"
+                      checked={isMultiSelect}
+                      onChange={handleMultiSelectChange}
+                  />
+              </div>
 
-                <Checkbox
-                    label="Multi-select"
-                    id="isMultiSelect"
-                    name="isMultiSelect"
-                    checked={isMultiSelect}
-                    onChange={handleMultiSelectChange}
-                />
-                <Field
-                    label="Default Value"
-                    id="defaultValue"
-                    name="defaultValue"
-                    type="text"
-                    placeholder="Enter default value"
-                    value={defaultValue}
-                    onChange={handleDefaultValueChange}
-                />
-                <TextArea
-                    label="Choices"
-                    id="choices"
-                    name="choices"
-                    required
-                    rows={4}
-                    cols={50}
-                    value={defaultValue}
-                    onChange={handleChoicesChange}
-                />
-                <Select label="Order" id="order" name="order" options={orderOptions} onChange={handleOrderChange}/>
-                <div className="buttons-container">
-                    <SubmitButton id="SaveChanges" onClick={handleSubmit} loading={false}>
-                        Save Changes
-                    </SubmitButton>
-                    <SubmitButton onClick={handleClearForm} loading={false}>
-                        Clear Form
-                    </SubmitButton>
-                </div>
-            </form>
-            {validationErrors.length > 0 && (
-                <div className="validation-errors">
-                    <ul>
-                        {validationErrors.map((error, index) => (
-                            <li key={index}>{error}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-        </div>
-    );
+              <div className="mb-5 mt-5 ms-3 me-3">
+                  <Field
+                      label="Default Value"
+                      id="defaultValue"
+                      name="defaultValue"
+                      type="text"
+                      placeholder="Enter default value"
+                      value={defaultValue}
+                      onChange={handleDefaultValueChange}
+                  />
+              </div>
+
+              <div className="mb-5 mt-5 ms-3 me-3">
+                  <TextArea
+                      label="Choices"
+                      id="choices"
+                      name="choices"
+                      required
+                      rows={4}
+                      value={defaultValue}
+                      onChange={handleChoicesChange}
+                  />
+              </div>
+
+              <div className="mb-5 mt-5 ms-3 me-3">
+                  <Select label="Order" id="order" name="order" options={orderOptions} onChange={handleOrderChange} />
+              </div>
+
+              <div className="d-flex justify-content-center mb-5 mt-5 ms-3 me-3">
+                  <SubmitButton id="SaveChanges" onClick={handleSubmit} loading={false} className="btn btn-success p">
+                      Save Changes
+                  </SubmitButton>
+                  <span className='m-2'>Or</span>
+                  <SubmitButton onClick={handleClearForm} loading={false} className="btn btn-danger m">
+                      Clear Form
+                  </SubmitButton>
+              </div>
+          </form>
+
+          {validationErrors.length > 0 && (
+              <div className="alert alert-danger mt-3">
+                  <ul>
+                      {validationErrors.map((error, index) => (
+                          <li key={index}>{error}</li>
+                      ))}
+                  </ul>
+              </div>
+          )}
+      </div>
+      </div>
+      </div>
+  </div>
+);
 }
 
 export default FieldBuilderForm;

@@ -18,20 +18,23 @@ function Select({ label, id, name, options }) {
   }, [id]);
 
   return (
-    <div>
-      <label htmlFor={id}>{label}</label>
-      <select
-        id={id}
-        name={name}
-        value={selectedValue} // Set the select value from state
-        onChange={handleSelectChange} // Handle select changes
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+    <div className="row form-group align-items-center">
+        <label htmlFor={id} className="col-md-2">{label}</label>
+        <div className="col-md-10">
+            <select
+                className="form-control"
+                id={id}
+                name={name}
+                value={selectedValue} 
+                onChange={handleSelectChange}
+            >
+                {options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+        </div>
     </div>
   );
 }

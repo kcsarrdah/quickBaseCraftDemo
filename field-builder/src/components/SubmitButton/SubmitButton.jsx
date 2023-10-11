@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function SubmitButton({ id, onClick, loading, children }) {
+function SubmitButton({ id, onClick, loading, children, className }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = async (e) => {
@@ -13,12 +13,18 @@ function SubmitButton({ id, onClick, loading, children }) {
 
         // After the action is complete, set loading to false
         setIsLoading(false);
-      }, 200); // 2 seconds (2000 milliseconds)
+      }, 200); // 200 milliseconds (0.2 seconds)
     }
   };
 
   return (
-    <button type="button" id={id} onClick={handleClick} disabled={isLoading} className='btn-submit'>
+    <button 
+      type="button" 
+      id={id} 
+      onClick={handleClick} 
+      disabled={isLoading} 
+      className={`${className} btn-submit ${isLoading ? 'disabled' : ''}`} 
+    >
       {isLoading ? 'Loading...' : children}
     </button>
   );

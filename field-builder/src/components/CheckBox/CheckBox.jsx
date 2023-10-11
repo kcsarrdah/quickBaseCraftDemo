@@ -18,19 +18,27 @@ function Checkbox({ label, id, name }) {
   }, [id]);
 
   return (
-    <div>
-      <label htmlFor={id}>{label}</label>
-      <div>
-        <input
-          type="checkbox"
-          id={id}
-          name={name}
-          checked={isChecked} // Set the checkbox state from state
-          onChange={handleCheckboxChange} // Handle checkbox changes
-        />
-        <span className="required-text">A Value is required</span>
-      </div>
+<div className="row form-group align-items-center">
+    <label className="col-md-4" htmlFor={id}>Type</label>
+    
+    <label className="col-md-3 custom-control-label" htmlFor={id}>{label}</label>
+    
+    <div className="col-md-1">
+        <div className="custom-control custom-checkbox">
+            <input
+                type="checkbox"
+                className="custom-control-input"
+                id={id}
+                name={name}
+                checked={isChecked} 
+                onChange={handleCheckboxChange}
+            />
+        </div>
     </div>
+    
+    <span className="text-danger col-md-4">A Value is required</span>
+</div>
+
   );
 }
 

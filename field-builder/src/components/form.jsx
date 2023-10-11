@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './form.css'; // Import the CSS file
+//import './form.css'; // Import the CSS file
 import SubmitButton from './SubmitButton/SubmitButton'; // Import the SubmitButton component
 import { FieldService } from '../MockService.js';
 
