@@ -23,10 +23,11 @@ function FieldBuilderForm() {
     const [order, setOrder] = useState('Choice1');
 
     const handleInputChange = (event) => {
-        const value = event.target.value;
-        setFieldValue(value);
-        localStorage.setItem(fieldValue, value);
-    };
+      const value = event.target.value;
+      setFieldValue(value);
+      localStorage.setItem('fieldName', value);  // Changed from fieldValue to 'fieldName' as the key
+  };
+  
 
     const handleMultiSelectChange = (event) => {
         setIsMultiSelect(event.target.checked);
@@ -53,11 +54,12 @@ function FieldBuilderForm() {
     
 
     useEffect(() => {
-        const savedValue = localStorage.getItem(fieldValue);
-        if (savedValue !== null) {
-            setFieldValue(savedValue);
-        }
-    }, [fieldValue]);
+      const savedValue = localStorage.getItem('fieldName');  // Using 'fieldName' as the key
+      if (savedValue !== null) {
+          setFieldValue(savedValue);
+      }
+  }, []);
+  
 
 
     const validateForm = () => {
@@ -134,6 +136,18 @@ function FieldBuilderForm() {
                     value={fieldValue}
                     onChange={handleInputChange}
                 />
+
+                <div>
+                  <label htmlFor="Type">Type</label>
+                <Checkbox
+                    label="Multi-select"
+                    id="isMultiSelect"
+                    name="isMultiSelect"
+                    checked={isMultiSelect}
+                    onChange={handleMultiSelectChange}
+                />
+                </div>
+
                 <Checkbox
                     label="Multi-select"
                     id="isMultiSelect"
