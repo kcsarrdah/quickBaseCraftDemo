@@ -13,7 +13,7 @@ function SubmitButton({ id, onClick, loading, children }) {
 
         // After the action is complete, set loading to false
         setIsLoading(false);
-      }, 2000); // 2 seconds (2000 milliseconds)
+      }, 200); // 2 seconds (2000 milliseconds)
     }
   };
 
