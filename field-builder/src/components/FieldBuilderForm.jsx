@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 import Field from './Field/Field';
 import Checkbox from './CheckBox/CheckBox';
-import TextArea from './TextArea/TextArea';
 import Select from './SelectComponent/SelectComponent';
 import SubmitButton from './SubmitButton/SubmitButton';
-import { FieldService } from '../MockService';
+import { FieldService } from '../Utils/MockService';
+import { EditorState, ContentState } from 'draft-js';
+import HighlightedEditor from './TextArea/DraftjsTextBox';
+import { validateForm } from '../Utils/fieldValidations'
+
 
 function FieldBuilderForm() {
 
@@ -15,13 +17,14 @@ function FieldBuilderForm() {
         { label: 'Display Choices in the order they were entered', value: 'Choice2' },
     ];
 
-    // States
+    // Hooks Setup
     const [validationErrors, setValidationErrors] = useState([]);
     const [fieldValue, setFieldValue] = useState('');
     const [isMultiSelect, setIsMultiSelect] = useState(false);
     const [defaultValue, setDefaultValue] = useState('');
-    const [choices, setChoices] = useState('');
     const [order, setOrder] = useState('Choice1');
+    const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
 
     const handleInputChange = (event) => {
         const value = event.target.value;
@@ -39,11 +42,6 @@ function FieldBuilderForm() {
         setDefaultValue(event.target.value);
     };
 
-    const handleChoicesChange = (event) => {
-        const newChoices = event.target.value;
-        setChoices(newChoices);
-    };
-
     const handleOrderChange = (event) => {
         setOrder(event.target.value);
     };
@@ -53,50 +51,40 @@ function FieldBuilderForm() {
         window.location.reload();
     };
 
+    const handleEditorStateChange = (newEditorState) => {
+        setEditorState(newEditorState);
+    };
+
+
     useEffect(() => {
-        const savedValue = localStorage.getItem('fieldName');
-        if (savedValue !== null) {
-            setFieldValue(savedValue);
+        const savedFieldName = localStorage.getItem('fieldName');
+        const savedEditorContent = localStorage.getItem('choices'); 
+    
+        if (savedFieldName) {
+            setFieldValue(savedFieldName);
+        }
+    
+        if (savedEditorContent) {
+            const contentState = ContentState.createFromText(savedEditorContent);
+            const newEditorState = EditorState.createWithContent(contentState);
+            setEditorState(newEditorState);
         }
     }, []);
-
-    //Validations
-    const validateForm = () => {
-        const errors = [];
-
-        const labelVal = document.getElementById('fieldName').value;
-        if (!labelVal.trim()) {
-            errors.push('Label cannot be empty.');
-        }
-
-        const choicesVal = document.getElementById('choices').value;
-        const choiceArray = choicesVal.split('\n')
-            .map((choice) => choice.trim())
-            .filter((choice) => choice !== '');
-
-        const uniqueChoices = new Set(choiceArray);
-        if (choiceArray.length !== uniqueChoices.size) {
-            errors.push('Duplicate choices are not allowed.');
-        }
-        if (choiceArray.length > 50) {
-            errors.push('There cannot be more than 50 choices.');
-        }
-        return errors;
-    };
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setValidationErrors([]);
-        const errors = validateForm();
+        const errors = validateForm(editorState, document.getElementById('fieldName').value);
 
         const defaultInput = document.getElementById('defaultValue');
-        const choicesTextArea = document.getElementById('choices');
-        const choicesList = choicesTextArea.value.split('\n');
+        const contentState = editorState.getCurrentContent();
+        const text = contentState.getPlainText();
         const defaultVal = defaultInput.value.trim();
 
-        const choicesArray = choicesTextArea.value.split('\n').map(choice => choice.trim());
+        const choicesArray = text.split('\n').map(choice => choice.trim());
 
+        //if the default value added is not in the list added, add them to the list
         if (defaultVal && !choicesArray.includes(defaultVal)) {
             choicesArray.push(defaultVal);
         }
@@ -104,26 +92,23 @@ function FieldBuilderForm() {
         //trim all chices above 40 characters
         const trimmedChoices = choicesArray.map(choice => choice.substring(0, 40));
         const cleanedArray = trimmedChoices.filter(item => item !== "");
-        console.log(cleanedArray)
 
 
         if (errors.length === 0) {
             // Create a JSON object based on the form data
             const fieldData = {
-                label: document.getElementById('fieldName').value,
-                multiSelect: isMultiSelect,
+                label: document.getElementById('fieldName').value.trim(),
+                multiSelect: document.getElementById('isMultiSelect').value,
                 defaultValue: defaultVal,
                 choices: cleanedArray,
-                order: order
+                order: document.getElementById('order').value
             };
             console.log('Field Data:', fieldData);
 
             try {
                 const response = await FieldService.saveField(fieldData);
-                // Handle the response as needed
                 console.log(response);
             } catch (error) {
-                // Handle any errors that occur during the API call
                 console.error('Error:', error);
             }
 
@@ -131,7 +116,7 @@ function FieldBuilderForm() {
             setValidationErrors(errors);
         }
     };
-
+    console.log(order)
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
@@ -139,7 +124,7 @@ function FieldBuilderForm() {
                     <div className="card border-info border-opacity-10 ">
                         <div className="card-header bg-info bg-opacity-10 text-black text-left mb-4">Field Builder</div>
                         <form onSubmit={handleSubmit} className="p-4 mb-4">
-                            <div className="mb-5 mt-5 ms-3 me-3">
+                            <div className="mb-5 mt-5 ms-2 me-2">
                                 <Field
                                     label="Label"
                                     id="fieldName"
@@ -151,7 +136,7 @@ function FieldBuilderForm() {
                                     onChange={handleInputChange}
                                 />
                             </div>
-                            <div className="mb-5 mt-5 ms-3 me-3">
+                            <div className="mb-5 mt-5 ms-2 me-2">
                                 <Checkbox
                                     label="Multi-select"
                                     id="isMultiSelect"
@@ -160,7 +145,7 @@ function FieldBuilderForm() {
                                     onChange={handleMultiSelectChange}
                                 />
                             </div>
-                            <div className="mb-5 mt-5 ms-3 me-3">
+                            <div className="mb-5 mt-5 ms-2 me-2">
                                 <Field
                                     label="Default Value"
                                     id="defaultValue"
@@ -171,18 +156,21 @@ function FieldBuilderForm() {
                                     onChange={handleDefaultValueChange}
                                 />
                             </div>
-                            <div className="mb-5 mt-5 ms-3 me-3">
-                                <TextArea
+
+                            <div className="mb-5 mt-5 ms-2 me-2">
+                                <HighlightedEditor
                                     label="Choices"
                                     id="choices"
                                     name="choices"
                                     required
                                     rows={4}
-                                    value={choices}
-                                    onChange={handleChoicesChange}
+                                    cols={40}
+                                    editorState={editorState}
+                                    onChange={handleEditorStateChange}        
                                 />
                             </div>
-                            <div className="mb-5 mt-5 ms-3 me-3">
+                            
+                            <div className="mb-5 mt-5 ms-2 me-2">
                                 <Select label="Order" id="order" name="order" options={orderOptions} onChange={handleOrderChange} />
                             </div>
                             <div className="d-flex justify-content-center mb-5 mt-5 ms-3 me-3">
