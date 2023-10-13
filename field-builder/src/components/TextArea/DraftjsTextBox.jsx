@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Editor, EditorState, Modifier, ContentState } from 'draft-js';
+import { Editor, EditorState, Modifier, ContentState, SelectionState } from 'draft-js';
 import 'draft-js/dist/Draft.css';
+import './DraftjsTextBox.css';
 
-function HighlightedEditor({ label, id, name, required, rows, cols, onChange }) {
+function HighlightedEditor({ label, id, name, required, rows, cols, onChange, skills, setSkills}) {
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
-    const maxCharacters = 40;
-
-    const editorStyles = {
-        border: '1px solid black',
-        padding: '10px',
-        minHeight: `${rows * 24}px`, // using rows to set the height
-        width: `${cols * 10}px`     // using cols to set the width
-    };
+    const maxCharacters = 40;  
 
     const handleInternalEditorChange = (state) => {
         let newContent = state.getCurrentContent();
@@ -58,22 +52,66 @@ function HighlightedEditor({ label, id, name, required, rows, cols, onChange }) 
             }
         });
 
-        const finalEditorState = hasChanges ? EditorState.push(state, newContent, 'change-inline-style') : state;
-        setEditorState(finalEditorState);
-        localStorage.setItem(id, finalEditorState.getCurrentContent().getPlainText());
-
-        // Call the passed-in function from the parent component
-        if (onChange) {
-            onChange(finalEditorState);
+        const currentText = newContent.getPlainText();
+        const lines = currentText.split('\n');
+        let lastValue = lines[lines.length - 2]?.trim();
+        if (lastValue && lastValue.length > maxCharacters) {
+            lastValue = lastValue.substring(0, maxCharacters);
         }
+
+        if (lastValue) {
+            setSkills(prevSkills => {
+                if (!prevSkills.includes(lastValue)) {  // Check if lastValue is not already in the skills
+                    const updatedSkills = [...prevSkills, lastValue];
+                    localStorage.setItem(id, updatedSkills.join('\n'));  // Store updated skills to local storage
+                    return updatedSkills;
+                }
+                else alert("The Choices Field Cannot Contain Duplicate Values");
+                return prevSkills;  // if the lastValue is already present, return the previous state
+            });
+
+            // Clear the editor
+            let newEditorState = EditorState.createEmpty();
+            newEditorState = moveSelectionToEnd(newEditorState);
+            setEditorState(newEditorState);
+        } else {
+            const finalEditorState = hasChanges ? EditorState.push(state, newContent, 'change-inline-style') : state;
+            setEditorState(finalEditorState);
+        }
+    };
+    function moveSelectionToEnd(editorState) {
+        const content = editorState.getCurrentContent();
+        const blockMap = content.getBlockMap();
+    
+        const key = blockMap.last().getKey();
+        const length = blockMap.last().getLength();
+    
+        const selection = new SelectionState({
+            anchorKey: key,
+            anchorOffset: length,
+            focusKey: key,
+            focusOffset: length,
+        });
+    
+        return EditorState.forceSelection(editorState, selection);
+    }
+
+    const removeSkill = (indexToRemove, event) => {
+        event.preventDefault();  // Prevent default behavior
+        event.stopPropagation(); // Stop the event from bubbling up
+    
+        setSkills(prevSkills => {
+            const updatedSkills = prevSkills.filter((_, index) => index !== indexToRemove);
+            localStorage.setItem(id, updatedSkills.join('\n'));  // Update local storage with new skills
+            return updatedSkills;
+        });
     };
 
     useEffect(() => {
         const savedValue = localStorage.getItem(id);
         if (savedValue) {
-            const contentState = ContentState.createFromText(savedValue);
-            const newEditorState = EditorState.createWithContent(contentState);
-            setEditorState(newEditorState);
+            const savedSkills = savedValue.split('\n').filter(skill => skill);
+            setSkills(savedSkills);
         }
     }, [id]);
 
@@ -81,7 +119,7 @@ function HighlightedEditor({ label, id, name, required, rows, cols, onChange }) 
         <div className="row form-group align-items-center">
             <label className="col-md-2" htmlFor={id}>{label}</label>
             <div className="col-md-10">
-                <div style={editorStyles}>
+                <div className="editorStyle" style={{ minHeight: `${rows * 24}px`, width: `${cols * 10}px` }}>
                     <Editor
                         id={id}
                         name={name}
@@ -94,6 +132,14 @@ function HighlightedEditor({ label, id, name, required, rows, cols, onChange }) 
                             },
                         }}
                     />
+                </div>
+                <div className="skillContainer">
+                    {skills.map((skill, index) => (
+                        <div key={index} className="skillChip">
+                            {skill}
+                            <button className="removeSkill" onClick={(event) => removeSkill(index, event)}>✖</button>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

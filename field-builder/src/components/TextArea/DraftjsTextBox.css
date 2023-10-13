@@ -1,0 +1,29 @@
+.editorStyle {
+    border: 1px solid black;
+    padding: 10px;
+    /* minHeight and width will need to be set inline since they're dynamic */
+}
+
+.skillContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.skillChip {
+    display: flex;
+    align-items: center;
+    background-color: #e0e0e0;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.removeSkill {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 14px;
+    color: red;
+}

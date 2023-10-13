@@ -24,6 +24,7 @@ function FieldBuilderForm() {
     const [defaultValue, setDefaultValue] = useState('');
     const [order, setOrder] = useState('Choice1');
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
+    const [skills, setSkills] = useState([]);
 
 
     const handleInputChange = (event) => {
@@ -44,6 +45,7 @@ function FieldBuilderForm() {
 
     const handleOrderChange = (event) => {
         setOrder(event.target.value);
+        console.log(order)
     };
 
     const handleClearForm = () => {
@@ -58,10 +60,14 @@ function FieldBuilderForm() {
 
     useEffect(() => {
         const savedFieldName = localStorage.getItem('fieldName');
+        const savedIsMultiSelect = localStorage.getItem('isMultiSelect') === 'true';
         const savedEditorContent = localStorage.getItem('choices'); 
     
         if (savedFieldName) {
             setFieldValue(savedFieldName);
+        }
+        if (savedIsMultiSelect) {
+            setIsMultiSelect(savedIsMultiSelect);
         }
     
         if (savedEditorContent) {
@@ -75,14 +81,11 @@ function FieldBuilderForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setValidationErrors([]);
-        const errors = validateForm(editorState, document.getElementById('fieldName').value);
 
         const defaultInput = document.getElementById('defaultValue');
-        const contentState = editorState.getCurrentContent();
-        const text = contentState.getPlainText();
         const defaultVal = defaultInput.value.trim();
 
-        const choicesArray = text.split('\n').map(choice => choice.trim());
+        const choicesArray =  skills;
 
         //if the default value added is not in the list added, add them to the list
         if (defaultVal && !choicesArray.includes(defaultVal)) {
@@ -90,15 +93,18 @@ function FieldBuilderForm() {
         }
 
         //trim all chices above 40 characters
-        const trimmedChoices = choicesArray.map(choice => choice.substring(0, 40));
-        const cleanedArray = trimmedChoices.filter(item => item !== "");
+        const cleanedArray = choicesArray.map(choice => choice.substring(0, 40)).filter(item => item !== "");
+        const errors = validateForm(cleanedArray, document.getElementById('fieldName').value);
 
 
         if (errors.length === 0) {
             // Create a JSON object based on the form data
+
+            const checkbox = document.getElementById('isMultiSelect');
+            const value = checkbox.checked;
             const fieldData = {
                 label: document.getElementById('fieldName').value.trim(),
-                multiSelect: document.getElementById('isMultiSelect').value,
+                multiSelect: value,
                 defaultValue: defaultVal,
                 choices: cleanedArray,
                 order: document.getElementById('order').value
@@ -116,7 +122,6 @@ function FieldBuilderForm() {
             setValidationErrors(errors);
         }
     };
-    console.log(order)
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
@@ -142,7 +147,6 @@ function FieldBuilderForm() {
                                     id="isMultiSelect"
                                     name="isMultiSelect"
                                     checked={isMultiSelect}
-                                    onChange={handleMultiSelectChange}
                                 />
                             </div>
                             <div className="mb-5 mt-5 ms-2 me-2">
@@ -166,7 +170,9 @@ function FieldBuilderForm() {
                                     rows={4}
                                     cols={40}
                                     editorState={editorState}
-                                    onChange={handleEditorStateChange}        
+                                    onChange={handleEditorStateChange}
+                                    skills={skills}
+                                    setSkills={setSkills}        
                                 />
                             </div>
                             
